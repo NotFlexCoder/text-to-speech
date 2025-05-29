@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     cache.set(randomId, text);
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const url = `${protocol}://${req.headers.host}/?id=${randomId}`;
-    return res.json({ status: 'success', id: randomId, url });
+    return res.json({ status: 'success', url });
   }
 
   if (id && cache.has(id)) {
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     const ttsRes = await fetch(ttsUrl);
     if (!ttsRes.ok) return res.status(500).json({ status: 'error', message: 'TTS failed' });
     res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Content-Disposition', 'attachment; filename="voice.mp3"');
+    res.setHeader('Content-Disposition', `attachment; filename="${id}.mp3"`);
     const audioBuffer = await ttsRes.arrayBuffer();
     return res.send(Buffer.from(audioBuffer));
   }
