@@ -6,7 +6,9 @@ export default async function handler(req, res) {
   if (text) {
     const randomId = Math.random().toString(36).substring(2, 10);
     cache.set(randomId, text);
-    return res.json({ id: randomId });
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const url = `${protocol}://${req.headers.host}/?id=${randomId}`;
+    return res.json({ url });
   }
 
   if (id && cache.has(id)) {
